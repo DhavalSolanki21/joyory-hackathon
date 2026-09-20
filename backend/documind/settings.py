@@ -64,6 +64,8 @@ TEMPLATES = [
     },
 ]
 
+
+
 WSGI_APPLICATION = 'documind.wsgi.application'
 
 DATABASES = {
