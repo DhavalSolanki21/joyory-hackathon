@@ -15,6 +15,8 @@ from .services import (
     ask_company_knowledge_base,
     classify_and_enrich_document,
     extract_text_from_pdf,
+    ask_document,
+    compare_documents,
 )
 
 
@@ -114,4 +116,43 @@ def company_chat_view(request: Request) -> Response:
     ]
 
     response_data = ask_company_knowledge_base(question, indexed_docs_data)
+    return Response(response_data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@parser_classes([JSONParser])
+def document_ask_view(request: Request, pk: int) -> Response:
+    """Ask a specific question against a single document."""
+    doc = get_object_or_404(Document, pk=pk)
+    
+    serializer = AskQuestionSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    question = serializer.validated_data['question']
+
+    if not doc.raw_text:
+        return Response({"error": "Document has no text extracted."}, status=status.HTTP_400_BAD_REQUEST)
+        
+    response_data = ask_document(doc.raw_text, question)
+    return Response(response_data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@parser_classes([JSONParser])
+def document_compare_view(request: Request) -> Response:
+    """Compare two documents by their IDs."""
+    doc1_id = request.data.get('doc1_id')
+    doc2_id = request.data.get('doc2_id')
+    
+    if not doc1_id or not doc2_id:
+        return Response({"error": "Please provide doc1_id and doc2_id."}, status=status.HTTP_400_BAD_REQUEST)
+        
+    doc1 = get_object_or_404(Document, pk=doc1_id)
+    doc2 = get_object_or_404(Document, pk=doc2_id)
+    
+    if not doc1.raw_text or not doc2.raw_text:
+        return Response({"error": "Both documents must have extracted text."}, status=status.HTTP_400_BAD_REQUEST)
+        
+    response_data = compare_documents(doc1.raw_text, doc2.raw_text)
     return Response(response_data, status=status.HTTP_200_OK)

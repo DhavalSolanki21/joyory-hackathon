@@ -156,3 +156,67 @@ def ask_company_knowledge_base(question: str, indexed_docs_data: List[Dict[str, 
     if isinstance(result, dict) and "question" not in result:
         result["question"] = question
     return result
+
+def ask_document(document_text: str, question: str) -> Dict[str, Any]:
+    """
+    Ask a specific question against a single document's text.
+    """
+    truncated_text = document_text[:28000]
+
+    system_prompt = (
+        "You are an intelligent Document Q&A Assistant. "
+        "Your task is to answer user questions accurately based ONLY on the provided document text. "
+        "If the answer is found in the text, provide a helpful, clear, professional response. "
+        "If the information is not present, state politely: 'This information is not found in the document.' "
+        "Provide your output strictly in JSON format with structure:\n"
+        "{\n"
+        '  "question": "The question asked (string)",\n'
+        '  "answer": "Comprehensive personalized response (string)",\n'
+        '  "sources": [\n'
+        '    {\n'
+        '      "excerpt": "Relevant quote or excerpt from the document supporting the answer"\n'
+        '    }\n'
+        '  ],\n'
+        '  "confidence": "Confidence score (e.g. 95%)"\n'
+        "}"
+    )
+
+    user_prompt = f"Document Context:\n{truncated_text}\n\nQuestion: {question}"
+    result = call_groq_json(system_prompt, user_prompt)
+
+    if isinstance(result, dict) and "question" not in result:
+        result["question"] = question
+    return result
+
+def compare_documents(doc1_text: str, doc2_text: str) -> Dict[str, Any]:
+    """
+    Compare two documents and highlight the differences, added clauses, removed clauses, etc.
+    """
+    t1 = doc1_text[:14000]
+    t2 = doc2_text[:14000]
+
+    system_prompt = (
+        "You are an expert Legal and Document Analyst. "
+        "Compare Version 1 and Version 2 of the document provided. "
+        "Identify material modifications, removed clauses, and new obligations. "
+        "Provide your output strictly in JSON format with structure:\n"
+        "{\n"
+        '  "risk_impact": "Integer (e.g. 48)",\n'
+        '  "summary": "Brief summary of differences",\n'
+        '  "differences": [\n'
+        '    {\n'
+        '      "section": "Clause or Section name",\n'
+        '      "v1_text": "Original text summary",\n'
+        '      "v2_text": "Revised text summary",\n'
+        '      "significance": "CRITICAL, MODERATE, or MINOR",\n'
+        '      "status": "Changed, Added, or Removed"\n'
+        '    }\n'
+        '  ]\n'
+        "}"
+    )
+
+    user_prompt = f"Version 1 (Original):\n{t1}\n\nVersion 2 (Revised):\n{t2}\n\nCompare the documents."
+    result = call_groq_json(system_prompt, user_prompt)
+    
+    return result
+
