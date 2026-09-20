@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
 const Header = () => {
-    const [isDark, setIsDark] = useState(false);
+    const [isDark, setIsDark] = useState(true);
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem('theme') || 
-            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        const savedTheme = localStorage.getItem('theme') || 'dark';
         if (savedTheme === 'dark') {
             document.documentElement.classList.add('dark');
             setIsDark(true);
@@ -23,42 +22,34 @@ const Header = () => {
     };
 
     return (
-        <header className="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl z-40 flex items-center justify-between px-gutter shadow-[0_1px_8px_rgba(0,0,0,0.03)]">
+        <header className="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl border-b border-border-color z-40 flex items-center justify-between px-gutter shadow-sm">
             <div className="flex items-center gap-space-sm text-on-surface-variant">
-                <span className="font-body-sm text-body-sm text-outline">Workspace</span>
+                <span className="font-body-sm text-body-sm text-outline font-medium">Upteky MindBase</span>
                 <span className="material-symbols-outlined text-[16px] text-outline-variant">chevron_right</span>
-                <span className="font-title-md text-title-md text-on-surface font-semibold tracking-tight">Intelligence Console</span>
+                <span className="font-title-md text-title-md text-on-surface font-semibold tracking-tight">Enterprise Knowledge Assistant</span>
             </div>
-            <div className="flex items-center gap-gutter-sm">
-                <div className="relative flex items-center">
-                    <span className="material-symbols-outlined absolute left-space-md text-outline text-[18px]">search</span>
-                    <input 
-                        className="h-10 w-72 pl-10 pr-space-md bg-surface-container-lowest rounded-xl font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-secondary-container transition-all shadow-[0_1px_6px_rgba(0,0,0,0.02)]" 
-                        placeholder="Search clauses, entities, digests..." 
-                        type="text" 
-                    />
+            
+            <div className="flex items-center gap-space-md">
+                {/* Engine Pill */}
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-low border border-border-color text-on-surface-variant text-xs">
+                    <span className="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
+                    <span>Groq LLaMA-3.3 Active</span>
                 </div>
+
+                {/* Dark Mode Toggle */}
                 <button 
                     aria-label="Toggle theme" 
-                    className="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" 
+                    className="w-10 h-10 rounded-xl bg-surface-container-low border border-border-color flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" 
                     onClick={toggleTheme}
                     type="button"
+                    title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
                 >
-                    {!isDark && <span className="material-symbols-outlined text-[20px]">dark_mode</span>}
-                    {isDark && <span className="material-symbols-outlined text-[20px]">light_mode</span>}
+                    {isDark ? (
+                        <span className="material-symbols-outlined text-[20px] text-amber-400">light_mode</span>
+                    ) : (
+                        <span className="material-symbols-outlined text-[20px] text-indigo-400">dark_mode</span>
+                    )}
                 </button>
-                <button 
-                    aria-label="Notifications" 
-                    className="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" 
-                    type="button"
-                >
-                    <span className="material-symbols-outlined text-[20px]">notifications</span>
-                </button>
-                <div className="flex items-center gap-space-sm pl-space-xs">
-                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                        <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
-                    </div>
-                </div>
             </div>
         </header>
     );

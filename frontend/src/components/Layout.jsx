@@ -1,4 +1,5 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 
@@ -8,8 +9,8 @@ const Layout = ({ children }) => {
             <Sidebar />
             <div className="pl-72">
                 <Header />
-                <main className="w-full pt-16 bg-background min-h-screen px-gutter py-gutter">
-                    {children}
+                <main className="w-full pt-20 bg-background min-h-screen px-gutter py-gutter">
+                    {children || <Outlet />}
                 </main>
             </div>
         </div>
