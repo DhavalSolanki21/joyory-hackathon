@@ -11,11 +11,14 @@ class DocumentSerializer(serializers.ModelSerializer):
             'file',
             'uploaded_at',
             'raw_text',
-            'analysis_result',
-            'overall_risk',
+            'category',
             'document_type',
+            'status',
+            'summary',
+            'metadata_fields',
+            'missing_fields',
         ]
-        read_only_fields = ['uploaded_at', 'raw_text', 'analysis_result', 'overall_risk', 'document_type']
+        read_only_fields = ['uploaded_at', 'raw_text', 'category', 'document_type', 'summary', 'metadata_fields', 'missing_fields']
 
 
 class DocumentListSerializer(serializers.ModelSerializer):
@@ -26,17 +29,13 @@ class DocumentListSerializer(serializers.ModelSerializer):
             'title',
             'file',
             'uploaded_at',
-            'overall_risk',
+            'category',
             'document_type',
+            'status',
+            'summary',
+            'missing_fields',
         ]
-        read_only_fields = ['uploaded_at', 'overall_risk', 'document_type']
 
 
 class AskQuestionSerializer(serializers.Serializer):
     question = serializers.CharField(required=True, min_length=1, max_length=2000)
-
-
-class CompareDocumentsSerializer(serializers.Serializer):
-    doc1_id = serializers.IntegerField(required=False)
-    doc2_id = serializers.IntegerField(required=False)
-
